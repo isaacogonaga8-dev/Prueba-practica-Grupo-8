@@ -1,0 +1,353 @@
+# 🏋️ FitGym Control – Gimnasio
+
+
+
+## 1. Análisis del problema
+
+- **Qué se pide:** procesar un número N de socios y obtener estadísticas globales (recaudo, VIP/Black, promedio).
+- **Qué se repite:** la lectura y el cálculo se hacen igual para cada socio → se necesita un ciclo.
+- **Qué depende de una condición:** la tarifa depende del plan (varias opciones fijas) y el descuento depende del rango de meses.
+- **Qué se acumula:** el dinero recaudado va sumándose socio por socio.
+- **Qué se cuenta:** cuántos socios eligieron VIP o Black.
+- **Qué se calcula al final:** el promedio = recaudo total ÷ N.
+- **Riesgos:** que el usuario ingrese letras, números fuera de rango o un nombre vacío; por eso cada dato se valida antes de usarse.
+- **Restricción del examen:** solo se usan contenidos vistos (Scanner, if/switch, ciclos, contadores, acumuladores, centinelas y máximos), sin POO.
+
+---
+
+## 2. Datos de entrada, proceso y salida
+
+### Entrada
+| Dato | Tipo | Validación |
+|------|------|-----------|
+| `n` (cantidad de socios) | Entero | 1 a 100 |
+| `socio` (nombre) | Texto | No vacío |
+| `plan` | Entero | 1, 2 o 3 |
+| `meses` | Entero | 1 a 24 |
+| `entrenador` | Entero | 1 = Sí, 2 = No |
+
+### Proceso
+1. Leer y validar `n`.
+2. Inicializar acumulador, contadores y máximo.
+3. Por cada socio (ciclo `for`):
+   1. Leer y validar nombre, plan, meses y entrenador.
+   2. Obtener la tarifa mensual con `switch` y contar VIP/Black.
+   3. `subtotal = tarifa × meses`
+   4. Determinar el porcentaje de descuento con `if / else-if` y calcular `descuento = subtotal × porcentaje`.
+   5. Si `entrenador = 1` → `adicional = 10 × meses`.
+   6. `totalPagar = subtotal − descuento + adicional`
+   7. Acumular: `totalRecaudado += totalPagar`.
+   8. Actualizar el máximo si `totalPagar` supera a `mayorPago`.
+4. Calcular `promedio = totalRecaudado / n`.
+
+### Salida
+- Resumen individual por socio: subtotal, descuento, entrenador y total a pagar.
+- Reporte final: socios procesados, **recaudo total**, planes Básico, **planes VIP/Black**, **promedio pagado** y socio que más pagó.
+- Mensaje de cierre: *"Programa finalizado correctamente"*.
+
+---
+
+## 3. Algoritmo
+
+1. Inicio.
+2. Mostrar tarifas y reglas.
+3. Leer `n`. Si no está entre 1 y 100, mostrar error y repetir el paso 3.
+4. Hacer `totalRecaudado = 0`, `contVIPBlack = 0`, `contBasico = 0`, `mayorPago = -1`.
+5. Repetir para `i` desde 1 hasta `n`:
+   1. Leer `socio` (repetir mientras esté vacío).
+   2. Leer `plan` (repetir mientras no sea 1, 2 o 3).
+   3. Leer `meses` (repetir mientras no esté entre 1 y 24).
+   4. Leer `entrenador` (repetir mientras no sea 1 o 2).
+   5. Según `plan`: 1 → tarifa 20; 2 → tarifa 35; 3 → tarifa 50. Contar en `contBasico` o `contVIPBlack`.
+   6. `subtotal = tarifa × meses`.
+   7. Si `meses ≥ 12` → 15 %; sino si `meses ≥ 6` → 10 %; sino si `meses ≥ 3` → 5 %; sino → 0 %.
+   8. `descuento = subtotal × porcentaje`.
+   9. Si `entrenador = 1` → `adicional = 10 × meses`; sino `adicional = 0`.
+   10. `totalPagar = subtotal − descuento + adicional`.
+   11. Mostrar el resumen del socio.
+   12. `totalRecaudado = totalRecaudado + totalPagar`.
+   13. Si `totalPagar > mayorPago` → actualizar `mayorPago` y `socioMayor`.
+6. `promedio = totalRecaudado / n`.
+7. Mostrar el reporte final.
+8. Mostrar mensaje de cierre.
+9. Fin.
+
+---
+
+## 4. Pseudocódigo en PSeInt
+
+```pseint
+Algoritmo FitGymControl
+	Definir n, i, plan, meses, entrenador, contVIPBlack, contBasico Como Entero
+	Definir socio, socioMayor, nombrePlan Como Caracter
+	Definir tarifa, subtotal, porcDesc, descuento, adicional Como Real
+	Definir totalPagar, totalRecaudado, promedio, mayorPago Como Real
+	
+	Escribir "=== FITGYM CONTROL - GIMNASIO ==="
+	Escribir "Basico $20 | VIP $35 | Black $50"
+	Escribir "Descuento: 3-5 meses 5% | 6-11 meses 10% | 12 o mas 15%"
+	Escribir "Entrenador: +$10 por mes"
+	
+	// Validar cantidad de socios
+	Repetir
+		Escribir "Cuantos socios desea registrar? (1-100): "
+		Leer n
+		Si n < 1 O n > 100 Entonces
+			Escribir "[Error] Ingrese un valor entre 1 y 100."
+		FinSi
+	Hasta Que n >= 1 Y n <= 100
+	
+	// Inicializar acumulador, contadores y maximo
+	totalRecaudado <- 0
+	contVIPBlack <- 0
+	contBasico <- 0
+	mayorPago <- -1
+	socioMayor <- ""
+	
+	Para i <- 1 Hasta n Con Paso 1 Hacer
+		Escribir "----- Socio ", i, " de ", n, " -----"
+		
+		Repetir
+			Escribir "Nombre del socio: "
+			Leer socio
+			Si Longitud(socio) = 0 Entonces
+				Escribir "[Error] El campo no puede estar vacio."
+			FinSi
+		Hasta Que Longitud(socio) > 0
+		
+		Repetir
+			Escribir "Plan (1 Basico, 2 VIP, 3 Black): "
+			Leer plan
+			Si plan < 1 O plan > 3 Entonces
+				Escribir "[Error] Ingrese un valor entre 1 y 3."
+			FinSi
+		Hasta Que plan >= 1 Y plan <= 3
+		
+		Repetir
+			Escribir "Meses contratados (1-24): "
+			Leer meses
+			Si meses < 1 O meses > 24 Entonces
+				Escribir "[Error] Ingrese un valor entre 1 y 24."
+			FinSi
+		Hasta Que meses >= 1 Y meses <= 24
+		
+		Repetir
+			Escribir "Incluye entrenador? (1 Si, 2 No): "
+			Leer entrenador
+			Si entrenador < 1 O entrenador > 2 Entonces
+				Escribir "[Error] Ingrese 1 o 2."
+			FinSi
+		Hasta Que entrenador = 1 O entrenador = 2
+		
+		// Tarifa segun plan
+		Segun plan Hacer
+			1:
+				tarifa <- 20
+				nombrePlan <- "Basico"
+				contBasico <- contBasico + 1
+			2:
+				tarifa <- 35
+				nombrePlan <- "VIP"
+				contVIPBlack <- contVIPBlack + 1
+			3:
+				tarifa <- 50
+				nombrePlan <- "Black"
+				contVIPBlack <- contVIPBlack + 1
+		FinSegun
+		
+		subtotal <- tarifa * meses
+		
+		// Descuento por meses
+		Si meses >= 12 Entonces
+			porcDesc <- 0.15
+		SiNo
+			Si meses >= 6 Entonces
+				porcDesc <- 0.10
+			SiNo
+				Si meses >= 3 Entonces
+					porcDesc <- 0.05
+				SiNo
+					porcDesc <- 0
+				FinSi
+			FinSi
+		FinSi
+		descuento <- subtotal * porcDesc
+		
+		// Adicional de entrenador
+		Si entrenador = 1 Entonces
+			adicional <- 10 * meses
+		SiNo
+			adicional <- 0
+		FinSi
+		
+		totalPagar <- subtotal - descuento + adicional
+		
+		Escribir ">> Resumen de ", socio
+		Escribir "Plan ", nombrePlan, " x ", meses, " meses: $", subtotal
+		Escribir "Descuento: -$", descuento
+		Escribir "Entrenador: +$", adicional
+		Escribir "TOTAL A PAGAR: $", totalPagar
+		
+		// Acumulador y maximo
+		totalRecaudado <- totalRecaudado + totalPagar
+		Si totalPagar > mayorPago Entonces
+			mayorPago <- totalPagar
+			socioMayor <- socio
+		FinSi
+	FinPara
+	
+	promedio <- totalRecaudado / n
+	
+	Escribir "========= REPORTE FINAL ========="
+	Escribir "Socios procesados: ", n
+	Escribir "Recaudo total: $", totalRecaudado
+	Escribir "Planes Basico: ", contBasico
+	Escribir "Planes VIP/Black: ", contVIPBlack
+	Escribir "Promedio pagado: $", promedio
+	Escribir "Socio que mas pago: ", socioMayor, " ($", mayorPago, ")"
+	Escribir "Programa finalizado correctamente. Hasta pronto!"
+FinAlgoritmo
+```
+
+---
+
+## 5. Diagrama de flujo
+
+```mermaid
+flowchart TD
+    A([Inicio]) --> B["Mostrar tarifas y reglas"]
+    B --> C[/"Leer n"/]
+    C --> D{"n entre 1 y 100?"}
+    D -- No --> E["Mostrar error"]
+    E --> C
+    D -- Si --> F["totalRecaudado = 0, contVIPBlack = 0, contBasico = 0, mayorPago = -1"]
+    F --> G["i = 1"]
+    G --> H{"i menor o igual que n?"}
+    H -- Si --> J[["Leer nombre no vacio"]]
+    J --> K[["Leer plan 1 a 3"]]
+    K --> L[["Leer meses 1 a 24"]]
+    L --> M[["Leer entrenador 1 o 2"]]
+    M --> S{"plan"}
+    S -- "1" --> S1["tarifa = 20, contBasico + 1"]
+    S -- "2" --> S2["tarifa = 35, contVIPBlack + 1"]
+    S -- "3" --> S3["tarifa = 50, contVIPBlack + 1"]
+    S1 --> T["subtotal = tarifa * meses"]
+    S2 --> T
+    S3 --> T
+    T --> U{"meses mayor o igual 12?"}
+    U -- Si --> U1["porcentaje = 0.15"]
+    U -- No --> V{"meses mayor o igual 6?"}
+    V -- Si --> V1["porcentaje = 0.10"]
+    V -- No --> W{"meses mayor o igual 3?"}
+    W -- Si --> W1["porcentaje = 0.05"]
+    W -- No --> W2["porcentaje = 0"]
+    U1 --> X["descuento = subtotal * porcentaje"]
+    V1 --> X
+    W1 --> X
+    W2 --> X
+    X --> Y{"entrenador = 1?"}
+    Y -- Si --> Y1["adicional = 10 * meses"]
+    Y -- No --> Y2["adicional = 0"]
+    Y1 --> Z["totalPagar = subtotal - descuento + adicional"]
+    Y2 --> Z
+    Z --> Z1[/"Mostrar resumen del socio"/]
+    Z1 --> AA["totalRecaudado = totalRecaudado + totalPagar"]
+    AA --> AB{"totalPagar mayor que mayorPago?"}
+    AB -- Si --> AC["mayorPago = totalPagar, socioMayor = nombre"]
+    AB -- No --> AD["i = i + 1"]
+    AC --> AD
+    AD --> H
+    H -- No --> AE["promedio = totalRecaudado / n"]
+    AE --> AF[/"Mostrar reporte final"/]
+    AF --> AG[/"Programa finalizado correctamente"/]
+    AG --> AH([Fin])
+```
+
+## 6. Pruebas de escritorio
+
+Valores iniciales en todas las pruebas: `totalRecaudado = 0`, `contVIPBlack = 0`, `contBasico = 0`, `mayorPago = -1`.
+
+###  Prueba 1 – Caso normal (n = 2)
+
+| i | socio | plan | meses | entr. | tarifa | subtotal | % desc | descuento | adicional | totalPagar | totalRecaudado | contVIPBlack | mayorPago |
+|---|-------|------|-------|-------|--------|----------|--------|-----------|-----------|------------|----------------|--------------|-----------|
+| 1 | Ana | 2 | 6 | 1 | 35 | 210 | 0.10 | 21 | 60 | **249** | 249 | 1 | 249 (Ana) |
+| 2 | Luis | 3 | 12 | 2 | 50 | 600 | 0.15 | 90 | 0 | **510** | 759 | 2 | 510 (Luis) |
+
+**Salida final:** recaudo = **$759.00** · VIP/Black = **2** · promedio = 759 / 2 = **$379.50** · mayor pago = Luis ($510.00).
+
+###  Prueba 2 – Caso límite (n = 1)
+
+Se usa 3 meses porque es el valor mínimo en que empieza a aplicarse el descuento.
+
+| i | socio | plan | meses | entr. | tarifa | subtotal | % desc | descuento | adicional | totalPagar | totalRecaudado | contBasico | contVIPBlack |
+|---|-------|------|-------|-------|--------|----------|--------|-----------|-----------|------------|----------------|------------|--------------|
+| 1 | Carlos | 1 | 3 | 2 | 20 | 60 | 0.05 | 3 | 0 | **57** | 57 | 1 | 0 |
+
+**Salida final:** recaudo = **$57.00** · VIP/Black = **0** · promedio = **$57.00**.
+
+###  Prueba 3 – Datos inválidos (n = 1)
+
+| Paso | Dato ingresado | Condición | Resultado |
+|------|----------------|-----------|-----------|
+| 1 | n = `0` | n < 1 |  Error, vuelve a preguntar |
+| 2 | n = `abc` | No es entero |  Error, vuelve a preguntar |
+| 3 | n = `1` | Válido |  Continúa |
+| 4 | nombre = (vacío) | Vacío |  Error, vuelve a preguntar |
+| 5 | nombre = `Marta` | Válido | Continúa |
+| 6 | plan = `5` | plan > 3 |  Error, vuelve a preguntar |
+| 7 | plan = `2` | Válido |  Continúa |
+| 8 | meses = `25` | meses > 24 |  Error, vuelve a preguntar |
+| 9 | meses = `24` | Válido (límite máximo) |  Continúa |
+| 10 | entrenador = `3` | No es 1 ni 2 |  Error, vuelve a preguntar |
+| 11 | entrenador = `1` | Válido |  Continúa |
+
+**Cálculo con los datos válidos:** tarifa 35 → subtotal 840 → descuento 15 % = 126 → adicional 10 × 24 = 240 → **totalPagar = 840 − 126 + 240 = $954.00**.
+**Salida final:** recaudo = $954.00 · VIP/Black = 1 · promedio = $954.00.
+
+---
+
+## 7. Estructuras utilizadas
+
+| Estructura | Dónde se usa | Para qué |
+|------------|--------------|----------|
+| `Scanner` | Lectura de todos los datos | Entrada por consola |
+| `switch` | Selección del plan | Asignar tarifa mensual y nombre del plan |
+| `if / else-if / else` | Descuento por meses | Elegir el porcentaje según el rango de meses |
+| `if` | Entrenador y máximo | Sumar adicional y actualizar el mayor pago |
+| `for` | Ciclo principal | Procesar los N socios |
+| `do-while` | Métodos de lectura | Repetir la pregunta hasta que el dato sea válido |
+| **Contadores** | `contVIPBlack`, `contBasico` | Contar planes por tipo |
+| **Acumulador** | `totalRecaudado` | Sumar lo que paga cada socio |
+| **Máximo** | `mayorPago`, `socioMayor` | Identificar al socio que más pagó |
+| Métodos estáticos | `leerEntero`, `leerTexto` | Reutilizar la validación |
+| `try-catch` | `leerEntero` | Evitar que el programa falle si escriben letras |
+
+---
+
+
+## 8. Casos de prueba
+
+Resumen de las pruebas de escritorio ejecutadas también en Java:
+
+| # | Tipo | Entrada | Resultado esperado |
+|---|------|---------|--------------------|
+| 1 | Normal | n=2 · Ana (VIP, 6, Sí) · Luis (Black, 12, No) | Recaudo $759.00 · VIP/Black 2 · Promedio $379.50 |
+| 2 | Límite | n=1 · Carlos (Básico, 3, No) | Total $57.00 (descuento mínimo 5 %) |
+| 3 | Inválido | n=0, plan=5, meses=abc, meses=25, entrenador=3 | Mensajes de error y nueva solicitud del dato |
+
+---
+
+## 9. Conclusiones
+
+- El uso de un ciclo **`for`** permitió procesar cualquier cantidad de socios con el mismo código, evitando repetir instrucciones.
+- El **`switch`** hizo más claro y ordenado asignar la tarifa según el plan, mientras que el **`if / else-if`** resultó ideal para los rangos de meses del descuento.
+- Las validaciones con **`do-while`** garantizan que el programa nunca trabaje con datos erróneos y mejoran la experiencia del usuario, porque se le vuelve a preguntar hasta que ingrese un valor correcto.
+- Los **contadores**, el **acumulador** y el **máximo** permitieron obtener estadísticas útiles (recaudo, VIP/Black, promedio, mayor pago) sin almacenar listas de datos.
+- Realizar el análisis, el pseudocódigo en PSeInt, el diagrama de flujo y las pruebas de escritorio **antes** de programar redujo los errores y facilitó la codificación en Java.
+- El trabajo en equipo con GitHub y commits pequeños y descriptivos permitió llevar un historial claro de cómo evolucionó la solución.
+
+---
+
+## 10. Evidencias
+

@@ -1,4 +1,4 @@
-# 🏋️ FitGym Control – Gimnasio
+#  FitGym Control – Gimnasio
 
 
 
@@ -157,7 +157,7 @@ Algoritmo FitGymControl
 		
 		subtotal <- tarifa * meses
 		
-		// Descuento por meses
+		
 		Si meses >= 12 Entonces
 			porcDesc <- 0.15
 		SiNo
@@ -173,7 +173,7 @@ Algoritmo FitGymControl
 		FinSi
 		descuento <- subtotal * porcDesc
 		
-		// Adicional de entrenador
+		
 		Si entrenador = 1 Entonces
 			adicional <- 10 * meses
 		SiNo
@@ -188,7 +188,7 @@ Algoritmo FitGymControl
 		Escribir "Entrenador: +$", adicional
 		Escribir "TOTAL A PAGAR: $", totalPagar
 		
-		// Acumulador y maximo
+		
 		totalRecaudado <- totalRecaudado + totalPagar
 		Si totalPagar > mayorPago Entonces
 			mayorPago <- totalPagar
@@ -350,4 +350,5 @@ Resumen de las pruebas de escritorio ejecutadas también en Java:
 ---
 
 ## 10. Evidencias
+
 
